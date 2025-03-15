@@ -52,18 +52,19 @@
         // تحميل قائمة المستخدمين
         function loadUsers() {
             const usersTable = document.getElementById("users-table");
-            usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>الإجراءات</th></tr>`;
+            usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>كلمة المرور</th><th>الدور</th><th>الإجراءات</th></tr>`;
 
             onValue(ref(db, "allowedUsers"), (snapshot) => {
-                usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>الإجراءات</th></tr>`; 
+                usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>كلمة المرور</th><th>الدور</th><th>الإجراءات</th></tr>`; 
                 snapshot.forEach((childSnapshot) => {
                     const user = childSnapshot.val();
                     const row = usersTable.insertRow();
                     row.insertCell(0).innerText = user.name;
                     row.insertCell(1).innerText = user.email;
-                    row.insertCell(2).innerText = user.role;
+                    row.insertCell(2).innerText = user.password; // عرض كلمة المرور
+                    row.insertCell(3).innerText = user.role;
                     
-                    const actionsCell = row.insertCell(3);
+                    const actionsCell = row.insertCell(4);
                     actionsCell.innerHTML = `<button onclick="deleteUser('${user.email}')">❌ حذف</button>`;
                 });
             });
@@ -101,7 +102,7 @@
         <h2>لوحة تحكم الإدمن</h2>
         <input type="text" id="name" placeholder="👤 الاسم الكامل" required>
         <input type="email" id="email" placeholder="📧 البريد الإلكتروني" required>
-        <input type="password" id="password" placeholder="🔒 كلمة المرور" required>
+        <input type="text" id="password" placeholder="🔒 كلمة المرور" required> <!-- إظهار كلمة المرور -->
         <select id="role">
             <option value="مستخدم">مستخدم</option>
             <option value="مشرف">مشرف</option>
@@ -114,6 +115,7 @@
             <tr>
                 <th>الاسم</th>
                 <th>البريد الإلكتروني</th>
+                <th>كلمة المرور</th>
                 <th>الدور</th>
                 <th>الإجراءات</th>
             </tr>
