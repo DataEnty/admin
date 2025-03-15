@@ -4,6 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم الإدمن</title>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const userName = localStorage.getItem("userName");
+        const userEmail = localStorage.getItem("userEmail");
+
+        if (!userName || !userEmail) {
+            // إعادة التوجيه إذا لم يكن المستخدم مسجلاً
+            window.location.href = "https://dataenty.github.io/sign-in-/sign.html";
+        } else {
+            document.getElementById("username").innerText = `مرحبًا، ${userName}`;
+        }
+    });
+
+    function logoutUser() {
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userName");
+        window.location.href = "https://dataenty.github.io/sign-in-/sign.html";
+    }
+</script>
+    
+
+
+
+
+
+
+
+
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
