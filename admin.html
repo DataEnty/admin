@@ -6,7 +6,7 @@
     <title>لوحة تحكم الإدمن</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+        import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAB4wO937rCwc0OTWeJlGgoaxErWOdjaJM",
@@ -21,44 +21,103 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // إضافة مستخدم جديد
         window.addUser = function () {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
+            const name = document.getElementById("name").value;
+            const role = document.getElementById("role").value;
             const messageBox = document.getElementById("message-box");
 
-            if (email && password) {
+            if (email && password && name && role) {
                 set(ref(db, "allowedUsers/" + btoa(email)), {
                     email: email,
-                    password: password
+                    password: password,
+                    name: name,
+                    role: role
                 }).then(() => {
                     messageBox.innerText = "✅ تم إضافة المستخدم بنجاح!";
                     messageBox.style.color = "green";
+                    loadUsers();
                 }).catch((error) => {
                     messageBox.innerText = "❌ خطأ: " + error.message;
                     messageBox.style.color = "red";
                 });
             } else {
-                messageBox.innerText = "❌ يرجى إدخال البريد الإلكتروني وكلمة المرور.";
+                messageBox.innerText = "❌ يرجى إدخال جميع البيانات.";
                 messageBox.style.color = "red";
             }
         };
+
+        // تحميل قائمة المستخدمين
+        function loadUsers() {
+            const usersTable = document.getElementById("users-table");
+            usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>الإجراءات</th></tr>`;
+
+            onValue(ref(db, "allowedUsers"), (snapshot) => {
+                usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>الإجراءات</th></tr>`; 
+                snapshot.forEach((childSnapshot) => {
+                    const user = childSnapshot.val();
+                    const row = usersTable.insertRow();
+                    row.insertCell(0).innerText = user.name;
+                    row.insertCell(1).innerText = user.email;
+                    row.insertCell(2).innerText = user.role;
+                    
+                    const actionsCell = row.insertCell(3);
+                    actionsCell.innerHTML = `<button onclick="deleteUser('${user.email}')">❌ حذف</button>`;
+                });
+            });
+        }
+
+        // حذف مستخدم
+        window.deleteUser = function (email) {
+            remove(ref(db, "allowedUsers/" + btoa(email))).then(() => {
+                alert("تم حذف المستخدم!");
+                loadUsers();
+            }).catch((error) => {
+                alert("❌ خطأ: " + error.message);
+            });
+        };
+
+        // تحميل المستخدمين عند فتح الصفحة
+        window.onload = loadUsers;
     </script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 50px; }
-        .admin-container { background: white; padding: 20px; width: 350px; margin: auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; }
-        input, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        .admin-container { background: white; padding: 20px; width: 450px; margin: auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
         button { background-color: #007bff; color: white; cursor: pointer; }
         button:hover { background-color: #0056b3; }
         #message-box { font-weight: bold; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #007bff; color: white; }
+        button { padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <h2>لوحة تحكم الإدمن</h2>
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="password" placeholder="كلمة المرور" required>
-        <button onclick="addUser()">إضافة المستخدم</button>
+        <input type="text" id="name" placeholder="👤 الاسم الكامل" required>
+        <input type="email" id="email" placeholder="📧 البريد الإلكتروني" required>
+        <input type="password" id="password" placeholder="🔒 كلمة المرور" required>
+        <select id="role">
+            <option value="مستخدم">مستخدم</option>
+            <option value="مشرف">مشرف</option>
+        </select>
+        <button onclick="addUser()">➕ إضافة المستخدم</button>
         <p id="message-box"></p>
+
+        <h3>المستخدمون المسموح لهم</h3>
+        <table id="users-table">
+            <tr>
+                <th>الاسم</th>
+                <th>البريد الإلكتروني</th>
+                <th>الدور</th>
+                <th>الإجراءات</th>
+            </tr>
+        </table>
     </div>
 </body>
 </html>
