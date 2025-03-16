@@ -1,156 +1,169 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الإدمن</title>
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const userName = localStorage.getItem("userName");
-        const userEmail = localStorage.getItem("userEmail");
-
-        if (!userName || !userEmail) {
-            // إعادة التوجيه إذا لم يكن المستخدم مسجلاً
-            window.location.href = "https://dataenty.github.io/sign-in-/sign.html";
-        } else {
-            document.getElementById("username").innerText = `مرحبًا، ${userName}`;
-        }
-    });
-
-    function logoutUser() {
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("userName");
-        window.location.href = "https://dataenty.github.io/sign-in-/sign.html";
+  <meta charset="UTF-8" />
+  <title>لوحة الادمن</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      padding: 30px;
     }
-</script>
-    
-
-
-
-
-
-
-
-
-    
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-        import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAB4wO937rCwc0OTWeJlGgoaxErWOdjaJM",
-            authDomain: "my-new-a6e9f.firebaseapp.com",
-            databaseURL: "https://my-new-a6e9f-default-rtdb.firebaseio.com",
-            projectId: "my-new-a6e9f",
-            storageBucket: "my-new-a6e9f.firebasestorage.app",
-            messagingSenderId: "1034729064842",
-            appId: "1:1034729064842:web:5b3d42fe7b5c0f3a3ae073"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // إضافة مستخدم جديد
-        window.addUser = function () {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const name = document.getElementById("name").value;
-            const role = document.getElementById("role").value;
-            const messageBox = document.getElementById("message-box");
-
-            if (email && password && name && role) {
-                set(ref(db, "allowedUsers/" + btoa(email)), {
-                    email: email,
-                    password: password,
-                    name: name,
-                    role: role
-                }).then(() => {
-                    messageBox.innerText = "✅ تم إضافة المستخدم بنجاح!";
-                    messageBox.style.color = "green";
-                    loadUsers();
-                }).catch((error) => {
-                    messageBox.innerText = "❌ خطأ: " + error.message;
-                    messageBox.style.color = "red";
-                });
-            } else {
-                messageBox.innerText = "❌ يرجى إدخال جميع البيانات.";
-                messageBox.style.color = "red";
-            }
-        };
-
-        // تحميل قائمة المستخدمين
-        function loadUsers() {
-            const usersTable = document.getElementById("users-table");
-            usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>كلمة المرور</th><th>الدور</th><th>الإجراءات</th></tr>`;
-
-            onValue(ref(db, "allowedUsers"), (snapshot) => {
-                usersTable.innerHTML = `<tr><th>الاسم</th><th>البريد الإلكتروني</th><th>كلمة المرور</th><th>الدور</th><th>الإجراءات</th></tr>`; 
-                snapshot.forEach((childSnapshot) => {
-                    const user = childSnapshot.val();
-                    const row = usersTable.insertRow();
-                    row.insertCell(0).innerText = user.name;
-                    row.insertCell(1).innerText = user.email;
-                    row.insertCell(2).innerText = user.password; // عرض كلمة المرور
-                    row.insertCell(3).innerText = user.role;
-                    
-                    const actionsCell = row.insertCell(4);
-                    actionsCell.innerHTML = `<button onclick="deleteUser('${user.email}')">❌ حذف</button>`;
-                });
-            });
-        }
-
-        // حذف مستخدم
-        window.deleteUser = function (email) {
-            remove(ref(db, "allowedUsers/" + btoa(email))).then(() => {
-                alert("تم حذف المستخدم!");
-                loadUsers();
-            }).catch((error) => {
-                alert("❌ خطأ: " + error.message);
-            });
-        };
-
-        // تحميل المستخدمين عند فتح الصفحة
-        window.onload = loadUsers;
-    </script>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 50px; }
-        .admin-container { background: white; padding: 20px; width: 450px; margin: auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; }
-        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { background-color: #007bff; color: white; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        #message-box { font-weight: bold; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        th { background-color: #007bff; color: white; }
-        button { padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; }
-        button:hover { opacity: 0.8; }
-    </style>
+    h2 {
+      color: #34495e;
+    }
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-bottom: 30px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 15px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #ecf0f1;
+      color: #2c3e50;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
 </head>
 <body>
-    <div class="admin-container">
-        <h2>لوحة تحكم الإدمن</h2>
-        <input type="text" id="name" placeholder="👤 الاسم الكامل" required>
-        <input type="email" id="email" placeholder="📧 البريد الإلكتروني" required>
-        <input type="text" id="password" placeholder="🔒 كلمة المرور" required> <!-- إظهار كلمة المرور -->
-        <select id="role">
-            <option value="مستخدم">مستخدم</option>
-            <option value="مشرف">مشرف</option>
-        </select>
-        <button onclick="addUser()">➕ إضافة المستخدم</button>
-        <p id="message-box"></p>
 
-        <h3>المستخدمون المسموح لهم</h3>
-        <table id="users-table">
-            <tr>
-                <th>الاسم</th>
-                <th>البريد الإلكتروني</th>
-                <th>كلمة المرور</th>
-                <th>الدور</th>
-                <th>الإجراءات</th>
-            </tr>
-        </table>
-    </div>
+  <div class="form-container">
+    <h2>إضافة مستخدم جديد</h2>
+    <input type="text" id="newUser" placeholder="اسم المستخدم" />
+    <input type="text" id="newPass" placeholder="كلمة السر" />
+    <button onclick="addUser()">➕ إضافة</button>
+  </div>
+
+  <h2>جدول المستخدمين</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>اسم المستخدم</th>
+        <th>كلمة السر</th>
+        <th>حذف</th>
+      </tr>
+    </thead>
+    <tbody id="userTable">
+      <!-- بيانات المستخدمين -->
+    </tbody>
+  </table>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAB4wO937rCwc0OTWeJlGgoaxErWOdjaJM",
+      authDomain: "my-new-a6e9f.firebaseapp.com",
+      databaseURL: "https://my-new-a6e9f-default-rtdb.firebaseio.com",
+      projectId: "my-new-a6e9f",
+      storageBucket: "my-new-a6e9f.appspot.com",
+      messagingSenderId: "1034729064842",
+      appId: "1:1034729064842:web:5b3d42fe7b5c0f3a3ae073"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+
+    // إضافة مستخدم
+    window.addUser = function() {
+      const username = document.getElementById("newUser").value.trim();
+      const password = document.getElementById("newPass").value.trim();
+
+      if(username && password) {
+        set(ref(db, 'users/' + username), {
+          password: password
+        }).then(() => {
+          alert("تمت إضافة المستخدم!");
+          document.getElementById("newUser").value = "";
+          document.getElementById("newPass").value = "";
+        }).catch((error) => {
+          console.error(error);
+          alert("حدث خطأ!");
+        });
+      } else {
+        alert("يرجى إدخال اسم مستخدم وكلمة سر");
+      }
+    };
+
+    // عرض المستخدمين في الجدول + زر حذف
+    const userTable = document.getElementById("userTable");
+    const usersRef = ref(db, 'users/');
+    onValue(usersRef, (snapshot) => {
+      userTable.innerHTML = "";
+      const users = snapshot.val();
+      for (let username in users) {
+        const row = document.createElement("tr");
+
+        const userCell = document.createElement("td");
+        userCell.textContent = username;
+
+        const passCell = document.createElement("td");
+        passCell.textContent = users[username].password;
+
+        const deleteCell = document.createElement("td");
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "🗑️ حذف";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = function() {
+          if(confirm(`هل تريد حذف المستخدم: ${username}؟`)) {
+            remove(ref(db, 'users/' + username));
+          }
+        };
+        deleteCell.appendChild(deleteBtn);
+
+        row.appendChild(userCell);
+        row.appendChild(passCell);
+        row.appendChild(deleteCell);
+        userTable.appendChild(row);
+      }
+    });
+  </script>
 </body>
 </html>
